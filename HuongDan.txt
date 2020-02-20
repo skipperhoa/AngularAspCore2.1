@@ -1,0 +1,110 @@
+﻿
+- Tạo ASP CORE 2.1 - >ENTITRY->version 2.1
+Bước 1: Tạo thư mục Controllers,Models,Views
+
+Bước 2: 
+- Tạo file _ViewsStart.cshtml trong thư mục Views/_ViewStart.cshtml
+- Tạo file _Layout.cshtml trong thưc mục Views/Shared/_Layout.cshtml
+
+Bước 3: Cài đặt EntityFramework core, vào nutget Package Manager để tìm kiếm và cài đặt
+Microsoft.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Tools
+
+Bước 4: Chỉnh sửa file Startup.cs để cấu hình đường dẫn route tới Controllers
+https://docs.microsoft.com/vi-vn/aspnet/core/fundamentals/startup?view=aspnetcore-2.1
+Hoặc copy file Statup.cs trong thư mục ASP Core 2.1 mà đã chọn Web Application MVC, vì phiên bản Web Application đã cài đặt sẳn route trong Status, ta có thể lợi dụng điểm đó và copy dán vào file Statup.cs
+
+Bước 5: Tạo file Product.cs và Category.cs và EFDataContext.cs để cấu hình EF CoreFirst, ở đây mình dùng Entityframework core (CoreFirst)
+- Có nghĩa là mình tự tạo class cho từng table, sao đó gùng migrations để build ra table và database, ta không cần vào trực tiếp sql server để tạo, nó tự sinh table và database cho ta
+- Tiếp tục tạo file appsetting.json cấu hình chuỗi kết nối đến server sql của ta, nhớ là file này nằm cùng cấp với project thư mục root
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "EFDataContext": "Server=DESKTOP-GCABV8F\\SQLExpress;Database=ProdctDB;Trusted_Connection=True;MultipleActiveResultSets=true"
+  }
+}
+
+Bước 6: để tạo được database và table ta cần chạy câu lệnh migration như sau:
+- Mở Packager Manager Console lên và copy mấy câu lệnh dưới đây để chạy
+# Add-Migration add_project
+# Update-Database
+
+- sau khi chạy xong ta được thư mục Migrations, và hãy kiểm tra SQL SERVER xem bạn sẽ thấy một database được tạo và các table mà ta dùng class để tạo cũng đã được tạo cho ta
+
+Có thể xem lại tại đây:https://github.com/skipperhoa/webapi-codefirst
+
+* CẤU HÌNH ANGULAR TÍCH HỢP VÔ PROJECT ASP CORE 2.1
+
+Bước 1: cd project asp tạo thư mục ClientApp, sao đó chạy câu lệnh dưới đây tải project angular về
+ng new ClientApp
+
+Bước 2: Để import được cái file mở rộng của angular trong thư mục dist khi build ra cần phải cài thư viện
+ScriptTagHelper
+- Vào Nutget Package Manager ->tìm ScriptTagHelper rồi cài đặt
+- Sau khi cài đặt cần phải add vào file _ViewImports.cshtml trong thư mục Views
+@using BasicAspCore
+@using BasicAspCore.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+- Từ đó a mới sử dụng được asp-src-include và asp-href-include trong file .cshtml
+
+Bước 3: Tiếp theo hãy vào thư mục ClientApp mà ta mới tải project angular về, và mở file angular.json lên và chỉnh sửa lại đường dẫn outputPath lại 
+outputPath:'../wwwroot/dist';
+- Tiếp tục tao hãy build ứng dụng angular, nó sẽ sinh ra các file thư viện, nằm trong đường dẫn mà ta đã chỉnh chổ outputPath
+# ng build --prod
+
+Bước 4: ta hãy import các file trong thư mục wwwroot/dist vào layout.cshtml hoặc index.chtml
+
+File Views/Shared/Layout.cshtml
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+   
+    
+   @RenderSection("Styles",required:false)
+</head>
+<body>
+    <div>
+        @RenderBody()
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+File Views/Home/Index.cshtml
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Styles{ 
+    <link rel="stylesheet" asp-href-include="dist/styles*.css"/>
+}
+@section Scripts{
+    <script type="text/javascript" asp-src-include="dist/*.js"></script>
+}
+
+
+<div>
+    <app-root></app-root>
+</div>
+
+Bước 5: bạn chỉ cần chạy IIS Express trong project ASP Core là được không cần chạy bên angular
+
+- Có nghĩa là hãy Run project là được
+
+
+
+
+
+
+

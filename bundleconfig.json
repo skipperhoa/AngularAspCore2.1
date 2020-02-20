@@ -1,0 +1,6 @@
+[
+  {
+    "inputFiles": [ "wwwroot/**/!(*.min).css" ]
+  }
+ 
+]
